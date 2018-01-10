@@ -45,8 +45,8 @@ class ViewController: UIViewController {
                     if let image = UIImage(data: data!) {
                         DispatchQueue.main.async {
                             self.showToast(message: "Success")
-//                            self.customImage.image = self.processPixels(in: image)
-                            self.customImage.image = image
+                            self.customImage.image = self.processPixels(in: image)
+//                            self.customImage.image = image
                         }
                     }
                 } else {
