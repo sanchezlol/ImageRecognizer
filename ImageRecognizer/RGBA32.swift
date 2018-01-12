@@ -28,8 +28,8 @@ struct RGBA32: Equatable {
     }
     
     init(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) {
-        var color1 = (UInt32(red) << 24) | (UInt32(green) << 16)
-        var color2 = (UInt32(blue) << 8) | UInt32(alpha)
+        let color1 = (UInt32(red) << 24) | (UInt32(green) << 16)
+        let color2 = (UInt32(blue) << 8) | UInt32(alpha)
         color = color1 | color2
 //        color = (UInt32(red) << 24) | (UInt32(green) << 16) | (UInt32(blue) << 8) | (UInt32(alpha) << 0)
     }

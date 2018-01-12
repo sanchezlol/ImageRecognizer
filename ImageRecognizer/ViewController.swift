@@ -92,25 +92,92 @@ class ViewController: UIViewController {
             return nil
         }
         
+//        let pixelBuffer = buffer.bindMemory(to: RGBA32.self, capacity: width * height)
         let pixelBuffer = buffer.bindMemory(to: RGBA32.self, capacity: width * height)
         
-        for row in 0 ..< Int(height) {
-            for column in 0 ..< Int(width) {
-                let offset = row * width + column
-                for i in 10...255{
-                    let mygreen = RGBA32(red: 0,   green: UInt8(i), blue: 0,   alpha: 255)
-                    if pixelBuffer[offset] == mygreen{
-                        pixelBuffer[offset] = .red
-                    }
+//        let float4Buffer = UnsafeBufferPointer(start: pixelBuffer, count: width * height)
+        
+        
+//        var output = Array(UnsafeBufferPointer(start: pixelBuffer, count: width * height))
+        
+//        let dfs : UnsafeMutablePointer<RGBA32> = pixelBuffer.
+        
+        
+//            DispatchQueue.init(label: "Queue1", qos: .userInitiated, attributes: .concurrent).async(flags: .barrier) {
+//                print("1 started")
+//                for row in 0 ..< Int(height/2) {
+//                    for column in 0 ..< Int(width) {
+//                        let offset = row * width + column
+//
+//                        pixelBuffer[offset] = RGBA32(red: pixelBuffer[offset].greenComponent, green: pixelBuffer[offset].redComponent, blue: pixelBuffer[offset].blueComponent, alpha: pixelBuffer[offset].alphaComponent)
+//                        print("1RED!")
+//                    }
+//                }
+//            }
+//            DispatchQueue.init(label: "Queue2", qos: .userInitiated, attributes: .concurrent).async(flags: .barrier) {
+//                print("2 started")
+//                for row in Int(height/2)..<(Int(height)) {
+//                    for column in 0 ..< Int(width) {
+//                        let offset = row * width + column
+//
+//                        pixelBuffer[offset] = RGBA32(red: pixelBuffer[offset].greenComponent, green: pixelBuffer[offset].redComponent, blue: pixelBuffer[offset].blueComponent, alpha: pixelBuffer[offset].alphaComponent)
+//                        print("2RED!")
+//
+//                    }
+//                }
+//            }
+
+        var temp = 2
+        DispatchQueue.init(label: "Queue1", qos: .userInitiated, attributes: .concurrent).async(flags: .barrier) {
+
+            print("1 started")
+            for row in 0 ..< Int(height/2) {
+                for column in 0 ..< Int(width) {
+                    
+                    let offset = row * width + column
+                    
+                    pixelBuffer[offset] = RGBA32(red: pixelBuffer[offset].greenComponent, green: pixelBuffer[offset].redComponent, blue: pixelBuffer[offset].blueComponent, alpha: pixelBuffer[offset].alphaComponent)
+//                    print("1RED!")
+
                 }
-                
             }
+            temp -= 1
         }
+        DispatchQueue.init(label: "Queue2", qos: .userInitiated, attributes: .concurrent).async(flags: .barrier) {
+
+            print("2 started")
+            for row in Int(height/2)..<(Int(height)) {
+                for column in 0 ..< Int(width) {
+                    let offset = row * width + column
+                    
+                    pixelBuffer[offset] = RGBA32(red: pixelBuffer[offset].greenComponent, green: pixelBuffer[offset].redComponent, blue: pixelBuffer[offset].blueComponent, alpha: pixelBuffer[offset].alphaComponent)
+//                    print("2RED!")
+                }
+            }
+            temp -= 1
+        }
+//        }
+
+        
+        while temp != 0 {
+            print("waiting")
+            sleep(1)
+            
+        }
+
+
         
         let outputCGImage = context.makeImage()!
-        let outputImage = UIImage(cgImage: outputCGImage, scale: image.scale, orientation: image.imageOrientation)
+        var outputImage = UIImage()
         
+        DispatchQueue.global().sync {
+            
+            outputImage = UIImage(cgImage: outputCGImage, scale: image.scale, orientation: image.imageOrientation)
+            
+        }
         return outputImage
+        
+        
     }
     private func showToast(message : String) {
         DispatchQueue.main.async {
